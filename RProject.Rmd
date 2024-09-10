@@ -1,0 +1,484 @@
+---
+title: "R Project STA3032"
+author: "Vejay Persaud"
+date: "April 10th, 2024"
+output: 
+  pdf_document:
+    latex_engine: xelatex
+header-includes:
+   - \usepackage{amsmath}
+   - \usepackage{amssymb}
+   - \usepackage{fontspec}
+   - \setmainfont{Times New Roman}
+editor_options: 
+  markdown: 
+    wrap: 72
+---
+
+# Question 1:
+
+The time required in minute for 26 students to finish a 50 minute
+history exam is recorded as the following:
+
+```{r}
+exam_time = c(46.23713, 52.58143, 42.89946, 50.66941, 28.42386, 50.77394,
+42.65797, 50.42930, 59.45894, 64.33043, 44.48510, 48.43943,
+45.10024, 48.38066, 49.75874, 43.07601, 48.27409, 55.65475,
+50.56731, 48.17550, 52.46376, 53.82756, 56.37297, 59.33533,
+51.23410, 47.14756)
+```
+
+a)  (5 Points) Draw a histogram of the data and describe the shape of it
+
+```{r}
+#histogram with added parameters
+hist(exam_time,main="Histogram of Time Taken for History Exam",
+xlab="Time (minutes)", 
+ylab="Frequency",
+xlim=c(0,100),
+col="darkmagenta",
+border="black",
+freq=TRUE
+)
+
+```
+
+The shape of the histogram is approximately bell shaped, but it's not
+exact. Further testing should be done to confirm the normality of this.
+
+(b) (5 Points) Draw a qqplot to check whether the normality assumption
+    of the data is valid [Hint: Use “qqnorm” command]
+
+```{r}
+# Drawing a QQ plot with line
+qqnorm(exam_time)
+qqline(exam_time, col = "red")
+
+
+#perform Shapiro-Wilk test for normality
+shapiro.test(exam_time)
+
+```
+
+According to the QQ plot and the Shapiro-Wilk test for normality we see
+agreement that the exam times can be safely assumed to be normal.
+Suppose the null hypothesis is the distribution of data is normal and
+the alternative hypothesis is the distribution of data is not normal.
+The test statistic, W, from the Shapiro-Wilk test ranges from 0 to 1
+where 0 is least normal and 1 is most normal. In our case W is 0.93659
+indicating high normality. The p-value is 0.1113 and compared against an
+alpha = 0.05. Since the p-value is greater than alpha we do not reject
+the null hypothesis. Additionally most of the data points are very close
+to a linear trend on the QQ plot. From both the QQ plot and the
+Shapiro-Wilk test we can confirm the normality of this data.
+
+(c) (10 Points) Perform a hypothesis test to check whether we can say
+    that students can finish the exam in time.
+
+```{r}
+# Hypothesis test to see if students can finish the exam in time
+t.test(exam_time, mu = 50, alternative = "less")
+
+```
+
+To determine if students in general can finish the exam in time, that is
+in 50 minutes or less, we perform a one-sided one sample t-test for the
+population mean. This inference is drawn from the sample data, which has
+an average exam time of 49.64442 minutes. Suppose the null hypothesis is
+that the population mean exam time is 50 minutes, the alternative
+hypothesis is that the population mean exam time is less than 50
+minutes, and our alpha is 0.05. The test shows that the p-value is
+0.3973 and since 0.3973 is greater than 0.05 there is insufficient
+evidence to reject the null hypothesis and accept the alternative.
+Therefore, we do not have strong statistical support to claim that the
+average exam time for all students is less than 50 minutes. Thus, based
+on this test and the sample data, we do not have evidence to support the
+claim that, on average, students can finish the exam in less than 50
+minutes.
+
+# Question 2:
+
+Vital capacity is a measure of the amount of air that someone can exhale
+after taking a deep breath, Data was collected on brass players and a
+control group. Assume the population distributions were normal.
+
+```{r}
+# Vital capacity data
+brass <- c(4.7, 4.6, 4.3, 4.5, 5.5, 4.9, 5.3)
+control <- c(4.2, 4.7, 5.1, 4.7, 5.0)
+```
+
+(a) (10 Points) Conduct a t test to determine whether the population
+    mean for brass is larger than that for control.
+
+```{r}
+# Conduct a t-test
+t.test(brass, control, alternative = "greater", var.equal = FALSE)
+```
+
+To determine whether brass players have a statistically significantly
+larger mean vital capacity than individuals in the control group, we
+conducted a two-sample, one-sided t-test. The sample mean vital capacity
+for the brass group is approximately 4.83 and the sample mean vital
+capacity for the control group is 4.74.Suppose the null hypothesis is
+that the mean vital capacity for brass players is equal to that of the
+control group, the alternative hypothesis is that brass players have a
+greater mean vital capacity than the control group, and our alpha is
+0.05. Based on the sample data, a Welch Two Sample t-test was performed,
+yielding a p-value of 0.3525. The p-value exceeds alpha since 0.3525 is
+greater than 0.05 indicating insufficient evidence to reject the null
+hypothesis and accept the alternative. Therefore, we cannot conclude
+that the mean vital capacity of brass players is significantly greater
+than that of the control group, based on our sample.
+
+(b) (5 Points) Provide the 95% confidence interval for the difference in
+    the two population means.
+
+```{r}
+#calculate the 95% confidence interval for the difference in means
+ci <- t.test(brass, control, var.equal = FALSE)$conf.int
+print(ci)
+
+```
+
+We observe that 0 is included in the confidence interval for the
+difference in means between the brass and control group. This provides
+further support from the findings from 2a, that we can not conclusively
+state there's a difference in mean vital capacity between the brass and
+control group.
+
+(c) (15 Points) A researcher claims that in theory the ”spread/variance”
+    in the two popu- lations is the same. Repeat step 1 (and 2)
+    utilizing this assumption with the argument ”var.equal” within the
+    ”t.test” function.
+
+```{r}
+# Conduct a t-test with the assumption of equal variances
+t.test(brass, control, alternative = "greater", var.equal = TRUE)
+#calculate the 95% confidence interval for the difference in means
+ci <- t.test(brass, control, var.equal = TRUE)$conf.int
+print(ci)
+```
+
+NOW ASSUMING EQUAL VARIANCES
+
+Part 2a repeated: To determine whether brass players have a
+statistically significantly larger mean vital capacity than individuals
+in the control group, we conducted a two-sample, one-sided t-test. The
+sample mean vital capacity for the brass group is approximately 4.83 and
+the sample mean vital capacity for the control group is 4.74.Suppose the
+null hypothesis is that the mean vital capacity for brass players is
+equal to that of the control group, the alternative hypothesis is that
+brass players have a greater mean vital capacity than the control group,
+and our alpha is 0.05. Based on the sample data, a Two Sample t-test was
+performed, yielding a p-value of 0.3577. The p-value exceeds alpha since
+0.3577 is greater than 0.05 indicating insufficient evidence to reject
+the null hypothesis and accept the alternative. Therefore, we cannot
+conclude that the mean vital capacity of brass players is significantly
+greater than that of the control group, based on our sample.
+
+Part 2b repeated: We observe that 0 is included in the confidence
+interval for the difference in means between the brass and control
+group. This provides further support from the findings from "2a
+repeated", that we can not conclusively state there's a difference in
+mean vital capacity between the brass and control group.
+
+# Question 3:
+
+Consider the data file uploaded in this project named “mydata.csv”.
+Based on the data, do the followings:
+
+```{r}
+#Load the datase
+mydata <- read.csv("C:/Users/Admin/Downloads/mydata.csv")
+
+# Take a look at the first few rows of the data
+head(mydata)
+```
+
+(a) (3 Points) Create a scatterplot of y vs x
+
+```{r}
+# Create a scatterplot
+plot(mydata$x, mydata$y, main="Scatterplot of y vs x", xlab="x", ylab="y", pch=19)
+```
+
+(b) (6 Points) Fit a simple linear regression model using y as the
+    response and plot the regression line (with the data)
+
+```{r}
+# Fit a linear regression model
+model <- lm(y ~ x, data=mydata)
+
+# Plot the data
+plot(mydata$x, mydata$y, main="Linear Regression of y on x", xlab="x", ylab="y", pch=19)
+
+# Add the regression line
+abline(model, col="red")
+```
+
+(c) (8 Points) Test whether x is a significant predictor and create a
+    95% CI around the slope coefficient.
+
+```{r}
+# Display summary of the model to view the significance of the predictors and the 95% CI for the slope
+summary(model)
+
+#Specifically display the 95% CI for the slope
+confint(model, "x", level=0.95)
+```
+
+The summary output of the linear regression model indicates the
+significance of the predictor variable x. The coefficient of x, the
+slope, in the model is 28.975, meaning that for every one unit increase
+in x there is an increase in y by 28.975 units. The p-value from the
+summary is 2e-16 or approximately 0, and compared to an alpha of 0.05,
+this strongly suggests that x is a statistically significant predictor
+of y.
+
+The 95% confidence interval for the slope coefficient associated with x
+ranges from 26.74015 to 31.20909. This interval means that we are 95%
+confident that the true effect of x on y, in terms of the slope, is
+within this range.
+
+(d) (3 Points) Report and interpret the coefficient of determination.
+
+```{r}
+# The summary function displays the R^2 value
+summary(model)$r.squared
+```
+
+The coefficient of determination is a statistical measure that explains
+how much of the variability in the response variable y can be explained
+by the linear model predictor variable x. The output provided from the
+summary of the linear model states the coefficient of determination is
+specifically 0.9354 meaning approximately 93.54% of the variance in the
+response variable y is explained by the predictor variable x.
+
+(e) (3 Points) For x=20, create a CI for E(Y \|X = 20).
+
+```{r}
+# Create a confidence interval for a prediction at x=20
+predict(model, newdata=data.frame(x=20),interval="confidence")
+```
+
+The confidence interval (126.2353, 192.0172) gives us a range of
+plausible values for the true mean of y when x = 20. We are 95%
+confident, the average value of y for observations with x = 20. falls
+within this interval. The estimated value is 159.1263.
+
+(f) (2 Points) For x=150, can you use the model to estimate E(Y \|X =
+    150)? Discuss.
+
+```{r}
+# Minimum and maximum values of x in the dataset
+min_x <- min(mydata$x)
+max_x <- max(mydata$x)
+
+# Print the range
+cat("The range of x in the dataset is from", min_x, "to", max_x, ".\n")
+
+# Create a confidence interval for a prediction at x=150
+predict(model, newdata=data.frame(x=150),interval="confidence")
+
+```
+
+The value of x = 150 falls outside the range of our data on x. So far
+our linear model has only assessed a relationship between y and x within
+this range of x values. If we wanted to estimate y within this range we
+can use the model to do this with acceptable accuracy. If we want to
+make predictions of y outside of the given range of x values we have to
+assume that the linear model holds beyond the current range of x values.
+Since x = 150 and the current range of x is from 11.10681 to 49.81578 we
+can not guarantee the accuracy of the linear relationship outside this
+range and a prediction using this point is possible but probably not
+accurate. The estimated value for x = 150 is 3925.827.
+
+(g) (25 Points) Does the model appear to be linear with respect to x?
+    Discuss, and if not, provide alternative model and repeat the
+    previous steps. Justify your answer. [Hint: Did you transform the
+    response or the predictor only? Explain your choice. Recall that Y_i
+    independent N(β0 +β1Xi, σ) so transforming Y may not only impact fit
+    (β0 +β1Xi),but also normality, independence, homogeneity of variance
+    as well. If a better fit such as (β0 + β1Xi + β2Xpoweri to some
+    power, i.e. a transformation only on the predictor addresses the
+    issue that is preferred.]
+
+Let's revisit the linear model we just analyzed in parts a-f
+
+```{r}
+# Fit a linear regression model
+model <- lm(y ~ x, data=mydata)
+
+# Plot the data
+plot(mydata$x, mydata$y, main="Linear Regression of y on x", xlab="x", ylab="y", pch=19)
+
+# Add the regression line
+abline(model, col="red")
+
+# Plot residuals to check assumptions
+par(mfrow=c(2,2))
+plot(model)
+
+```
+
+From the first plot, the model looks linear, and with the line added to
+the plot in part 3b it appears so, however a careful eye will see a
+slight curve. The coefficient of determination being above 90% is also
+deceptive, appearing to confirm the linear relationship. Using the
+commands the Residuals vs Fitted and the Normal Q-Q plots provide visual
+evidence that some other pattern might be a better model for the given
+data. The Residual vs Fitted plot does not show random scatter, there is
+a clear non-linear pattern occurring. The Normal Q-Q plot points follow
+the line indicating normality of the data.
+
+(3g.a) Create a scatterplot of y vs x
+
+```{r}
+# Plot the data
+plot(mydata$x, mydata$y, main="Scatterplot of y vs x", xlab="x", ylab="y", pch=19)
+```
+
+(3g.b) Fit a non-linear regression model using y as the response and
+plot the regression line (with the data)
+
+```{r}
+# Fit a quadratic regression model
+model_quadratic <- lm(y ~ x + I(x^2), data=mydata)
+
+# Plot the data
+plot(mydata$x, mydata$y, main="Non-Linear Regression of y on x", xlab="x", ylab="y", pch=19)
+
+# Generate predictions for a sequence of x values
+x_vals <- seq(min(mydata$x), max(mydata$x), length.out = 100)
+
+predictions <- predict(model_quadratic, newdata = data.frame(x = x_vals))
+
+# Add the regression curve
+lines(x_vals, predictions, col="green")
+```
+
+Using a quadtratic model of form $β_0 + β_1X_i + β_2X_i^2$ as suggested
+by the hint, we see that visually the non-linear regression line fits
+the data almost perfectly through the center of the data points.
+
+(3g.c) Test whether x is a significant predictor and create a 95% CI
+around the slope coefficient.
+
+```{r}
+#Check the summary for significance of coefficients
+summary(model_quadratic)
+
+#Specifically display the 95% CI for the linear term
+confint(model_quadratic, "x", level=0.95)
+
+#Specifically display the 95% CI for the quadratic term
+confint(model_quadratic, "I(x^2)", level=0.95)
+
+```
+
+The summary output of the non-linear regression model indicates the
+significance of the predictor variable x. The coefficient of $x^2$, in
+the model is 0.62422, meaning that for every one unit increase in x
+there is an increase in y by 0.62422 units. The p-value from the summary
+is 5.72e-14 or approximately 0, and compared to an alpha of 0.05, this
+strongly suggests that $x^2$ is contributes a statistically significant
+amount to the prediction of y.Additionally the coefficient of x, in the
+model is -8.85145, meaning that for every one unit increase in x there
+is a decrease in y by 8.85145 units. The p-value from the summary is
+0.0181, and compared to an alpha of 0.05, this suggests that x
+contributes a statistically significant amount to the prediction of y.
+
+The 95% confidence interval for the linear coefficient associated with x
+ranges from -16.12036 to -1.582528. This interval means that we are 95%
+confident that the true effect of x on y, in terms of the slope, is
+within this range.
+
+The 95% confidence interval for the non-linear coefficient associated
+with x ranges from 0.5059574 to 0.7424859. This interval means that we
+are 95% confident that the true effect of x on y, in terms of the slope,
+is within this range.
+
+(3g.d) Report and interpret the coefficient of determination.
+
+```{r}
+# The summary function displays the R^2 value
+summary(model_quadratic)$r.squared
+```
+
+The output provided from the summary of the non-linear model states the
+coefficient of determination is specifically 0.9812951 meaning
+approximately 98.13% of the variance in the response variable y is
+explained by the predictor variable x. This is observed to be higher
+than the coefficient of determination from the linear model which could
+suggest the non-linear model is better fit.
+
+(3g.e) For x=20, create a CI for E(Y \|X = 20)
+
+```{r}
+# Create a confidence interval for a prediction at x=20
+predict(model_quadratic, newdata=data.frame(x=20),interval="confidence")
+```
+
+The confidence interval (119.9104, 156.5737) gives us a range of
+plausible values for the true mean of y when x = 20.We are 95%
+confident, the average value of y for observations with x = 20 falls
+within this interval. For x = 20 the estimated value of y is 138.2421.
+For comparison, the estimated value of y given x = 20 with the linear
+model is 159.1263 and as a reminder that was with a confidence interval
+of (126.2353, 192.0172). So we observe that there is some decent overlap
+between our intervals however the non-linear confidence interval width
+is much smaller than the width of the confidence using the linear model.
+This observation that the confidence interval width became smaller while
+using a non-linear estimate possibly suggests higher precision or better
+fit.
+
+(3g.f) For x=150, can you use the model to estimate E(Y \|X = 150)?
+Discuss.
+
+```{r}
+# Print the range
+cat("The range of x in the dataset is from", min_x, "to", max_x, ".\n")
+
+# Create a confidence interval for a prediction at x=150
+predict(model_quadratic, newdata=data.frame(x=150),interval="confidence")
+
+```
+
+Since the non-linear model uses the same set of data, the range of
+values for x has not changed and thus we'd run into the same problem
+trying to estimate the y value for a x value of 150 since it's outside
+the range. It's possible but will probably be inaccurate. For x = 150
+using the non-linear model, the estimated value of y is 12782.85.
+Compared with x = 150 again the estimate of y using the linear model is
+3925.827 there is a very large difference in how the models try to
+extrapolate the behavior beyond the given range of x values.
+
+3g.g Assessment of the Non-Linear Model
+
+```{r}
+# Plot residuals for the new model
+par(mfrow=c(2,2))
+plot(model_quadratic)
+```
+
+From the Residuals vs Fitted plot we see that there is a random scatter
+and no observable patterns suggesting we have a better fit model.
+Additionally the Normal Q-Q plot follows the line suggesting we've
+retained normality as also suggested by the hint. Given the assessment
+we've done and comparisons in parts 3g.a - 3g.g we have reasonable
+evidence to accept fitting the data with the alternate option of a
+non-linear prediction model.
+
+Along with concepts from the course, these are some sources I found
+particularly helpful with the project
+
+<https://www.library.virginia.edu/data/articles/understanding-q-q-plots>
+
+<https://online.stat.psu.edu/stat462/node/117/>
+
+<https://r-coder.com/plot-r/#R_plot_pch>
+
+<https://www.statskingdom.com/shapiro-wilk-test-calculator.html>
+
+<https://www.statology.org/assumption-of-normality/>
